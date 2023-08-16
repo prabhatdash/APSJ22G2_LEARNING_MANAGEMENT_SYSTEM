@@ -1,0 +1,592 @@
+SOURCE CODE
+
+Main
+import connector as con
+import auth
+
+def registration():
+    print("ENTER YOUR NAME")
+    name=input()
+    print("ENTER EMAIL ID")
+    email=input()
+    query="insert into registration(name,email) values" +"('"+name+"','"+email+"');"
+    print(" Registered Successfully ")
+    con.cursor.execute(query)
+    con.dbc.commit()
+
+def login():
+    print("ENTER THE USER ID TO LOGIN: ")
+    user_id = input()
+    fetch_query = "select * from registration;"
+    con.cursor.execute(fetch_query)
+    count = 0
+    for i in con.cursor:
+        if user_id == i[2]:
+            count = count + 1
+            print("Please wait, we are sending the OTP to the given ID........")
+            auth.auth(user_id)
+    if count == 0:
+        print("USER NOT REGISTERED !")
+        registration()
+
+print("*"*176)
+print("                                                         WELCOME TO THE LEARNING MANAGEMENT SYSTEM !")
+print("*"*176)
+print(" "*176)
+print("SELECT THE OPTION TO BEGIN !")
+print("Press 1 to Login")
+print("Press 2 to Register")
+
+user_input=int(input())
+
+if user_input==1:
+    login()
+elif user_input==2:
+    registration()
+
+import menu
+
+menu.main()
+menu.ast()
+menu.pswd()
+menu.rst()
+menu.ast()
+menu.dtails()
+menu.mk1()
+menu.mk2()
+menu.Ana()
+menu.phy()
+menu.chem()
+menu.meth()
+menu.ip()
+menu.Anan()
+menu.main3()
+menu.me()
+menu.ch()
+menu.IP()
+menu.ph()
+
+
+Authentication
+import smtplib
+import random
+
+def auth(email):
+    s = smtplib.SMTP('smtp.gmail.com', 587)
+    s.starttls()
+    s.login('group2@apsjorhat.org', 'apsj#12345678')
+    otp = random.randint(111111, 999999)
+    message = str(otp)
+    s.sendmail("group2@apsjorhat.org", email, message)
+    s.quit()
+    print("Enter the OTP: ")
+    val = int(input())
+    if val == otp:
+        print("Login Successful !!!")
+    else:
+        print("Incorrect OTP !!!")
+
+Connector
+import mysql.connector as mc
+try:
+    dbc = mc.connect(host="localhost", user="root", passwd="root", database="lms")
+    cursor = dbc.cursor()
+except Exception as e:
+    print(e)
+
+OTP Sender
+import smtplib
+import random
+
+
+def auth(email):
+    s = smtplib.SMTP('smtp.gmail.com', 587)
+    s.starttls()
+    s.login('group2@apsjorhat.org', 'apsj#12345678')
+    otp = random.randint(111111, 999999)
+    message = str(otp)
+    s.sendmail("group2@apsjorhat.org", email, message)
+    s.quit()
+    print("Enter the OTP: ")
+    val = int(input())
+    if val == otp:
+        print("Login Successful !!!")
+    else:
+        print("Incorrect OTP !!!")
+
+
+Menu
+import mysql.connector as a
+import matplotlib.pyplot as plt
+import pywhatkit as kit
+import webbrowser
+import pandas as pd
+
+con = a.connect(host="localhost", user="root", password="root")
+c = con.cursor()
+c.execute("use lms")
+
+def ast():
+    n = input("Student Name : ")
+    c = input("Class : ")
+    r = input("Roll No : ")
+    a = input("Address : ")
+    p = input("Phone : ")
+    data = (n, c, r, a, p)
+    sql = "insert into student values(%s,%s,%s,%s,%s);"
+    c = con.cursor()
+    c.execute(sql, data)
+    con.commit()
+    print("Data Entered Successfully")
+    print("*" * 176)
+    main()
+
+def rst():
+    sql="select * from student"
+    c=con.cursor()
+    c.execute(sql)
+    myresult = c.fetchall()
+    for row in myresult:
+        print(row)
+    print("*"*176)
+    print("*" * 176)
+
+    c = input("Class : ")
+    r = input("Roll No : ")
+    data = (c, r)
+    sql = "delete from student where Class = %s and roll_no = %s"
+    c = con.cursor()
+    c.execute(sql, data)
+    con.commit()
+    print(" "*176)
+    print("Updated Table")
+    print(" "*176)
+    sql = "select * from student"
+    c = con.cursor()
+    c.execute(sql)
+    myresult = c.fetchall()
+    for row in myresult:
+        print(row)
+    print("Data Updated")
+    print('*' * 176)
+    main()
+
+def dtails():
+    sql = "select * from student"
+    c.execute(sql)
+
+    myresult = c.fetchall()
+    for row in myresult:
+        print(row)
+    print("Executed")
+    print("*" * 176)
+    main()
+
+def mk1():
+    print("Term 1 Marks")
+    n = input("Roll No : ")
+    c = input("Maths : ")
+    r = input("Physics : ")
+    a = input("English : ")
+    p = input("Chemistry : ")
+    data = (n, c, r, a, p)
+    sql = "insert into marks values(%s,%s,%s,%s,%s);"
+    c = con.cursor()
+    c.execute(sql, data)
+    con.commit()
+    print("Data Entered Successfully")
+    print("*" * 176)
+    main()
+
+def mk2():
+
+    n = input("Roll No : ")
+    c = input("Maths : ")
+    r = input("Physics : ")
+    a = input("English : ")
+    p = input("Chemistry : ")
+    data = (n, c, r, a, p)
+    sql = "insert into marks2 values(%s,%s,%s,%s,%s);"
+    c = con.cursor()
+    c.execute(sql, data)
+    con.commit()
+    print("Data Entered Successfully")
+    print("*" * 176)
+    main()
+
+def Ana():
+    def term1():
+        sql = "select * from marks"
+        c = con.cursor()
+        c.execute(sql)
+        myresult = c.fetchall()
+        data=[]
+        for row in myresult:
+            data.append(row)                                            #Copy this for Term 2
+        df=pd.DataFrame(data,columns=['Roll No','Maths','Physics','English','Chemistry'])
+        print(df.to_markdown(index=False))
+
+        roll = input("Enter roll no : ")
+        sql = "select maths,Physics,English,Chemistry from marks where roll_no = " + roll + ";"
+        c = con.cursor()
+        d = c.execute(sql)
+
+        for i in c:
+            marks = list(i)
+
+        subjects = ["Maths", "Physics", "English", "Chemistry"]
+        plt.plot(subjects, marks)
+        plt.show()
+        print("*" * 176)
+        Anan()
+
+    def term2():
+        sql = "select * from marks2"
+        c = con.cursor()
+        c.execute(sql)
+        myresult = c.fetchall()
+        data=[]
+        for row in myresult:
+            data.append(row)  # Copy this for Term 2
+        df = pd.DataFrame(data, columns=['Roll No', 'Maths', 'Physics', 'English', 'Chemistry'])
+        print(df.to_markdown(index=False))
+
+        roll = input("Enter roll no : ")
+        sql = "select maths,Physics,English,Chemistry from marks2 where roll_no = " + roll + ";"
+        c = con.cursor()
+        d = c.execute(sql)
+
+        for i in c:
+            marks = list(i)
+
+        subjects = ["Maths", "Physics", "English", "Chemistry"]
+        plt.plot(subjects, marks)
+        plt.show()
+        print("*" * 176)
+        Anan()
+
+    def Anan():
+        print("""                    
+************************************************************************                                              
+TERM WISE ANALYSIS
+                                                                                   ***************************************************************************                      
+
+                    1) Term 1                              2) Term 2
+                    3) Exit
+            """)
+        choice = input("Enter Task No :")
+        print("*" * 176)
+        if (choice == "1"):
+            term1()
+        elif (choice == "2"):
+            term2()
+        elif (choice == "3"):
+            main()
+
+        else:
+            print("Wrong Choice")
+            main()
+
+    Anan()
+
+def phy():
+    Physics={"Chapter1": "https://www.youtube.com/watch?v=zHxYZJpb5G0",
+         "Chapter2" : "https://www.youtube.com/watch?v=ueqMlm8UPQA",
+         "Chapter3" : "https://www.youtube.com/watch?v=A2qXSSYL9lM",
+         "Chapter4" : "https://www.youtube.com/watch?v=QUPXVv-ZhiE",
+         "Chapter5" : "https://www.youtube.com/watch?v=-RfdFKa2Jgc",
+         "Chapter6" : "https://www.youtube.com/watch?v=qPVoaN0Mxkg",
+         "Chapter7" : "https://www.youtube.com/watch?v=t_2V7-gN6Fw",
+         "Chapter8" : "https://www.youtube.com/watch?v=CE3-X02W7AU",
+         "Chapter9" : "https://www.youtube.com/watch?v=9dopYMCpdJQ",
+         "Chapter10" : "https://www.youtube.com/watch?v=EqtkqcPJpyE",
+         "Chapter11" : "https://www.youtube.com/watch?v=xbd75rGqiWU",
+         "Chapter12" : "https://www.youtube.com/watch?v=3ahItMZDKO0",
+         "Chapter13" : "https://www.youtube.com/watch?v=ef6DR5eA4x4",
+         "Chapter14" : 'https://www.youtube.com/watch?v=F5IpIHzBvLQ',
+         }
+  
+  for i in Physics:
+        a=input("Chapter you want to watch : ")
+
+        b=Physics[a]
+        kit.playonyt(b)
+        main2()
+
+def chem():
+     Chemistry={"Chapter1": "https://www.youtube.com/watch?v=e8cPTtEueC0",
+             "Chapter2" : "https://www.youtube.com/watch?v=NZ9djVzSqQE",
+            "Chapter3" : "https://www.youtube.com/watch?v=UOGMqrkJYlM",
+             "Chapter4" : "https://www.youtube.com/watch?v=WIOhOF14udA",
+            "Chapter5" : "https://www.youtube.com/watch?v=PpuPUMfr91Y",
+            "Chapter6" : "https://www.youtube.com/watch?v=PPKkaT4ThEk",
+            "Chapter7" : "https://www.youtube.com/watch?v=WxZLrSY0dRE",
+            "Chapter8" : "https://www.youtube.com/watch?v=nwgktpWVSeI",
+            "Chapter9" : "https://www.youtube.com/watch?v=vwS4wO3W4eg",
+            "Chapter10" : "https://www.youtube.com/watch?v=gle54Yb1Q34"
+             }
+     for i in Chemistry:
+         a=input("Chapter you want to watch : ")
+         b=Chemistry[a]
+         kit.playonyt(b)
+         main2()
+def meth():
+    maths={"Chapter1": "https://youtu.be/805ElUjEJ1I",
+         "Chapter2" : "https://youtu.be/nf2id-6PrQY",
+         "Chapter3" : "https://youtu.be/hyhktV5pxrE",
+         "Chapter4" : "https://youtu.be/U4j8Pw4hV5U",
+         "Chapter5" : "https://youtu.be/3v--OCXUgYY",
+         "Chapter6" : "https://www.youtube.com/watch?v=6Nk8YoHgnss",
+         "Chapter7" : "https://www.youtube.com/watch?v=hXOrQ0Ao4UE",
+         "Chapter8" : "https://www.youtube.com/watch?v=qEU2oKUNosA",
+         "Chapter9" : "https://www.youtube.com/watch?v=HzUPPCfcw64",
+         "Chapter10" : "https://www.youtube.com/watch?v=NEj70xMyRIk",
+         "Chapter11" : "https://www.youtube.com/watch?v=jCluGlqH70M",
+         "Chapter12" : "https://www.youtube.com/watch?v=9T3HfRnvpo8",
+         "Chapter13" : "https://www.youtube.com/watch?v=vO9zVl0fXZA",
+
+         }
+
+    for i in maths:
+        a=input("Chapter you want to watch : ")
+        b=maths[a]
+        kit.playonyt(b)
+        main2()
+
+def ip():
+     ip={"Chapter1": "https://youtu.be/Caun35Wc82s",
+             "Chapter2" : "https://www.youtube.com/watch?v=Oj-vA63nsBI&list=PLF_7kfnwLFCFnjki8KSeTQHyJ7OkdBdNA",
+            "Chapter3" : "https://www.youtube.com/watch?v=TOXF8LXEFJw&list=PLF_7kfnwLFCFW27SD2cKamlTUde0OurJS",
+             "Chapter4" : "https://www.youtube.com/watch?v=daPAcFFSFdY&list=PLF_7kfnwLFCGzzyaPRyNjSXRRR7W_qmny",
+            "Chapter5" : "https://www.youtube.com/watch?v=zQwBW0HqEQA&list=PLYxMlXeOofIVFzJybpSfAM5pbbhUwxYrn",
+             }
+     for i in ip:
+         a=input("Chapter you want to watch : ")
+         b=ip[a]
+         kit.playonyt(b)
+         main2()
+
+#Notes of physics
+def ph():
+    Physics={"Chapter1": "https://drive.google.com/file/d/1-2DVZmQwdIEpPskS0l2PT8UFgyVITybn/view",
+         "Chapter2" : "https://drive.google.com/file/d/1f10LrgSw9uxFG0o8k9fzDF2K3aPGPbpM/view",
+         "Chapter3" : "https://drive.google.com/file/d/1z35mqk4zHD1GHVp1Drdo5gAK5YknH6yP/view",
+         "Chapter4" : "https://drive.google.com/file/d/16rex-dJUGyZlQQC76myU0VTtPGVmb44S/view",
+         "Chapter5" : "https://drive.google.com/file/d/1EJEOrlk8JMn6Nll5a8dSlWi_GfhmSlkk/view",
+         "Chapter6" : "https://drive.google.com/file/d/16e2eCkGuk3zAOFdPZQb2Ux9RsoE4Ghyq/view",
+         "Chapter7" : "https://drive.google.com/file/d/1-9h2P2MyM3fyijpQx4li-YxSun1uWkUJ/view",
+         "Chapter8" : "https://drive.google.com/file/d/1SG3kseUoplzTKNrc42aKLHGGBy4SeIRV/view",
+         "Chapter9" : "https://drive.google.com/file/d/1WpEYNFeml_oYklO7MgThHLJW2jEykHQ6/view",
+         "Chapter10" : "https://mycbseguide.com/blog/wave-optics-class-12-notes-physics/",
+         "Chapter11" : "https://drive.google.com/file/d/15QtAgAClibib3Mlm8_ZrF3wuZpnqibKv/view",
+         "Chapter12" : "https://drive.google.com/file/d/1irbay09SxjDtbs81tEJr_3Id1s1Mg30o/view",
+         "Chapter13" : "https://www.ndjtuition.com/2019/03/atom-and-nuclei-class-12th-handmade.html",
+         "Chapter14" : "https://www.vedantu.com/revision-notes/cbse-class-12-physics-notes-chapter-14-semiconductor-electronic-material-devices-and-simple-circuits"
+
+         }
+    for i in Physics:
+        print("""                                               CHAPTER WISE NOTES !
+        Chapter1 = Electric Charges and Fields
+        Chapter2 = Electrostatic potential and Capacitance
+        Chapter3 = Current Electricity
+        Chapter4 = Moving Charges and Magnetism
+        Chapter5 = Magnetism and Matter
+        Chapter6 = Electromagnetic Induction
+        Chapter7 = Alternating Current
+        Chapter8 = Electromagnetic Waves
+        Chapter9 = Ray Optics
+        Chapter10 = Wave Optics
+        Chapter11 = Dual Nature And Radiation
+        Chapter12 = Atoms
+        Chapter13 = Nuclei
+        Chapter14 = Semiconductor
+        """)
+        a=input("Notes of the chapter : ")
+
+        b=Physics[a]
+        webbrowser.open_new(b)
+        main3()
+
+#Notes of Chemistry
+def ch():
+     Chemistry={"Chapter1": "https://drive.google.com/file/d/1c0sQfgKbWJOewMJOV71stPWzTetYxD9n/view",
+         "Chapter2" :"https://drive.google.com/file/d/1gzD0ILpI2cOetL01TQ6kdyjRRW3tpkt4/view",
+         "Chapter3" :"https://drive.google.com/file/d/1ckA6tBheTLSEaouKhq72Cfq09c6onvbx/view",
+         "Chapter4" :"https://drive.google.com/file/d/1uaKhkW4d1uReROMGeJOPW5I6dIzNf6WU/view",
+         "Chapter5" :"https://drive.google.com/file/d/1J-ggGgBaG1ENG0AbF-rrQisht6a8WsDt/view",
+         "Chapter6" :"https://drive.google.com/file/d/1oybh2Rprjj6R3SJTqEbWDZkN4E841YAp/view",
+         "Chapter7" :"https://drive.google.com/file/d/1qbXJsLjqiMD8rIfP_a-kM8xDZ0ql0eZ7/view",
+         "Chapter8" :"https://drive.google.com/file/d/1m6jszPpfbktB5AoxPMpECjgRmwFvI7Go/view",
+         "Chapter9" :"https://drive.google.com/file/d/1AG6342oOQ2bPB-4STHCTEQLRmRLQwg3S/view",
+         "Chapter10" :"https://drive.google.com/file/d/1si4aFTFUotEHDtKxORr9-Dhp6TL3t-cj/view"
+             }
+     for i in Chemistry:
+         print("""                                               CHAPTER WISE NOTES !
+                 Chapter1 = Solutions
+                 Chapter2 = Electrochemistry
+                 Chapter3 = Chemical Kinetics
+                 Chapter4 = d- and f-Block Elements
+                 Chapter5 = Coordination Compounds
+                 Chapter6 = Haloalkanes and Haloarenes
+                 Chapter7 = Alcohols, Phenols and Ethers
+                 Chapter8 = Aldehydes, Ketones and Carboxylic Acid
+                 Chapter9 = Amines
+                 Chapter10 = Biomolecules
+
+                 """)
+         a=input("Notes of the Chapter : ")
+         b=Chemistry[a]
+         webbrowser.open_new(b)
+         main3()
+def me():
+    maths={"Chapter1": "https://www.learncbse.in/relations-and-functions-class-12-notes/",
+         "Chapter2" :"https://www.learncbse.in/relations-and-functions-class-12-notes/",
+         "Chapter3" :"https://www.learncbse.in/matrices-class-12-notes/",
+         "Chapter4" :"https://www.learncbse.in/determinants-class-12-notes/",
+         "Chapter5" :"https://www.learncbse.in/continuity-and-differentiability-class-12-notes/",
+         "Chapter6" :"https://www.learncbse.in/application-of-derivatives-class-12-notes/",
+         "Chapter7" :"https://www.learncbse.in/integrals-class-12-notes/",
+         "Chapter8" :"https://byjus.com/ncert-solutions-class-12-maths/chapter-8-application-of-integrals/",
+         "Chapter9" :"https://www.learncbse.in/differential-equations-class-12-notes/",
+         "Chapter10" :"https://www.learncbse.in/vector-algebra-class-12-notes/",
+         "Chapter11" :"https://www.learncbse.in/three-dimensional-geometry-class-12-notes/",
+         "Chapter12" :"https://www.learncbse.in/linear-programming-class-12-notes/",
+         "Chapter13" :"https://www.learncbse.in/probability-class-12-notes/"
+         }
+    for i in maths:
+        print("""                                               CHAPTER WISE NOTES !
+                         Chapter1 = Relations and Functions
+                         Chapter2 = Inverse trigonometric functions
+                         Chapter3 = Matrices
+                         Chapter4 = Determinants
+                         Chapter5 = Continuity and Differentiability
+                         Chapter6 = Application of Derivatives
+                         Chapter7 = Integrals
+                         Chapter8 = Application of Integrals
+                         Chapter9 = Differential Equations
+                         Chapter10 = Vector Algebra
+                         Chapter11 = 3-D Geometry
+                         Chapter12 = Linear Progamming
+                         Chapter13 = Probability
+
+                         """)
+        a=input("Notes of the Chapter : ")
+        b=maths[a]
+        webbrowser.open_new(b)
+        main3()
+
+def IP():
+     ip={"Chapter1": "http://python.mykvs.in/presentation/presentation2023/class%20xii/informatics%20practices/Python%20Pandas1.pdf",
+             "Chapter2" : "http://python.mykvs.in/presentation/presentation2023/class%20xii/informatics%20practices/Data%20visualization2.pdf",
+            "Chapter3" : "http://python.mykvs.in/presentation/presentation2023/class%20xii/informatics%20practices/sql%20functions3.pdf",
+             "Chapter4" : "http://python.mykvs.in/presentation/presentation2023/class%20xii/informatics%20practices/sql%20relations4.pdf",
+            "Chapter5" : "http://python.mykvs.in/presentation/presentation2023/class%20xii/informatics%20practices/sql%20relations4.pdf",
+            "Chapter6" : "http://python.mykvs.in/presentation/presentation2023/class%20xii/informatics%20practices/internet%20and%20www6.pdf",
+            "Chapter7" : "http://python.mykvs.in/presentation/presentation2023/class%20xii/informatics%20practices/website%20concepts7.pdf",
+            "Chapter8" : "http://python.mykvs.in/presentation/presentation2023/class%20xii/informatics%20practices/web%20browser8.pdf",
+            "Chapter9" : "http://python.mykvs.in/presentation/presentation2023/class%20xii/informatics%20practices/societal%20impacts9.pdf",
+            "Chapter10" : "http://python.mykvs.in/presentation/presentation2023/class%20xii/informatics%20practices/societal%20impacts10.pdf",
+             }
+     for i in ip:
+         a=input("Notes Of The Chapter : ")
+         b=ip[a]
+         webbrowser.open_new(b)
+         main3()
+def main3():
+
+
+    print("""                    
+    ***************************************************************************
+                                                                                     
+STUDY MATERIALS
+    ***************************************************************************              
+            1) Physics                             2) Chemistry 
+            3) Maths                               4) IP 
+            5) main menu
+    """)
+    choice = input("Enter Task No :")
+    print("*" * 176)
+    if (choice == "1"):
+        ph()
+    elif (choice == "2"):
+        ch()
+    elif (choice == "3"):
+        me()
+    elif (choice == "4"):
+        IP()
+    elif (choice == "5"):
+        main()
+    else:
+        print("Wrong Choice")
+        main3()
+
+def main2():
+    print("""                   
+     ***************************************************************************
+                                                                                
+VIDEO LECTURES !
+     ***************************************************************************
+
+            1) Physics                             2) Chemistry 
+            3) Maths                               4) IP 
+            5) Main Menu
+    """)
+    choice = input("Enter Task No :")
+    print("*" * 176)
+    if (choice == "1"):
+        phy()
+    elif (choice == "2"):
+        chem()
+    elif (choice == "3"):
+        meth()
+    elif (choice == "4"):
+        ip()
+    elif (choice == "5"):
+        main()
+    else:
+        print("Wrong Choice")
+        main2()
+def main():
+    print("""            
+   ***************************************************************************
+                                                                                 
+                             LEARNING MANAGEMENT SYSTEM       
+             
+***************************************************************************
+
+    1) Add Student                 2) Remove Student
+    3) Student details             4) Marks Term 1
+    5) Marks term 2                6) Analysis
+    7) Study material              8) Lectures
+    9) Logout
+
+
+     """)
+    choice = input("Enter Task No :")
+    print("*" * 176)
+    if (choice == "1"):
+        ast()
+    elif (choice == "2"):
+        rst()
+    elif (choice == "3"):
+        dtails()
+    elif (choice == "4"):
+        mk1()
+    elif (choice == "5"):
+        mk2()
+    elif (choice == "6"):
+        Ana()
+    elif (choice == "7"):
+        main3()
+    elif (choice == "8"):
+        main2()
+    elif (choice == "9"):
+        from main import login
+        login()
+
+
+    else:
+        print("Wrong Choice")
+        main()
+
+main()
